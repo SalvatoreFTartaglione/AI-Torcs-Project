@@ -73,8 +73,8 @@ public class SimpleDriver extends Controller {
 			SwingUtilities.invokeLater(() -> new CharReader(this));
 		}
 		if (autonomusDriving) {
-            prototypes_filename = "C:\\Users\\salva\\Documents\\Università\\2023-2024\\2° Semestre\\AI\\Client Torc Sorgente\\classes\\Torcs_data.csv";
-			//prototypes_filename = "C:\\Users\\salva\\Documents\\Università\\2023-2024\\2° Semestre\\AI\\AI-Torcs-Project\\Client Torc Sorgente\\classes\\Torcs_data.csv";
+            //prototypes_filename = "C:\\Users\\salva\\Documents\\Università\\2023-2024\\2° Semestre\\AI\\Client Torc Sorgente\\classes\\Torcs_data.csv";
+			prototypes_filename = "C:\\Users\\salva\\Documents\\Università\\2023-2024\\2° Semestre\\AI\\AI-Torcs-Project\\Client Torc Sorgente\\classes\\Torcs_data.csv";
             knn = new NearestNeighbor(prototypes_filename);
         }
 	}
