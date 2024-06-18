@@ -389,28 +389,37 @@ public class SimpleDriver extends Controller {
 	private void exportToCSV(SensorModel sensors) throws IOException {
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter("Torcs_data.csv", true))) {
+
+			/* 
+			int minTrackEdgeSensor= 0;
+			int maxTrackEdgeSensor= 200;
+			double minSpeed = -70.00;
+			double maxSpeed = 310.00;
+			*/
+
 			bw.append(Double.toString(sensors.getSpeed()) + ";");
-			bw.append(sensors.getTrackPosition() + ";");
-			bw.append(sensors.getTrackEdgeSensors()[0] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[1] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[2] + ";");
-            bw.append(sensors.getTrackEdgeSensors()[3] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[4] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[5] + ";");
-            bw.append(sensors.getTrackEdgeSensors()[6] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[7] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[8] + ";");
-            bw.append(sensors.getTrackEdgeSensors()[9] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[10] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[11] + ";");
-            bw.append(sensors.getTrackEdgeSensors()[12] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[13] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[14] + ";");
-            bw.append(sensors.getTrackEdgeSensors()[15] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[16] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[17] + ";");
-			bw.append(sensors.getTrackEdgeSensors()[18] + ";");
-            bw.append(sensors.getAngleToTrackAxis() + ";");
+			bw.append(normalize(sensors.getTrackPosition(), -1, +1) + ";");		//aggiustare minimo e massimo
+			bw.append(normalize(sensors.getTrackEdgeSensors()[0] , 0, 10)+ ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[1] , 10, 20)+ ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[2] , 20, 30)+ ";");
+            bw.append(normalize(sensors.getTrackEdgeSensors()[3] , 30, 40)+ ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[4] , 40, 50)+ ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[5] , 50, 60)+ ";");
+            bw.append(normalize(sensors.getTrackEdgeSensors()[6] , 60, 70)+ ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[7] , 70, 80)+ ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[8] , 80, 90)+ ";");
+            bw.append(normalize(sensors.getTrackEdgeSensors()[9] , 90, 100)+ ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[10], 100, 110) + ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[11], 110, 120) + ";");
+            bw.append(normalize(sensors.getTrackEdgeSensors()[12], 120, 130) + ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[13], 130, 140) + ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[14], 140, 150) + ";");
+            bw.append(normalize(sensors.getTrackEdgeSensors()[15], 150, 160) + ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[16], 160, 170) + ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[17], 170, 180) + ";");
+			bw.append(normalize(sensors.getTrackEdgeSensors()[18], 180, 190) + ";");
+            bw.append(normalize(sensors.getAngleToTrackAxis(),  -(Math.PI), +(Math.PI)) + ";");
+
 			bw.append((ch == KeyEvent.VK_UP ? String.valueOf(1)
             : ch == KeyEvent.VK_DOWN ? String.valueOf(2)
                     : ch == KeyEvent.VK_LEFT ? String.valueOf(3)
@@ -423,36 +432,41 @@ public class SimpleDriver extends Controller {
         } catch (IOException ex) {
             Logger.getLogger(SimpleDriver.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
+
+	private double normalize(double value, double min, double max) {
+	return (value - min) / (max - min);
+	}
 
 	public void predictControl(SensorModel sensors) {
         //valore di k per il K-NN. Se voglio usare NN, allora k=1 altrimenti k= (es) 5
         int k = 5;
 
         DrivingData dd = new DrivingData(
-                sensors.getSpeed(),
-                sensors.getTrackPosition(),
-				sensors.getTrackEdgeSensors()[0],
-				sensors.getTrackEdgeSensors()[1],
-				sensors.getTrackEdgeSensors()[2],
-				sensors.getTrackEdgeSensors()[3],
-				sensors.getTrackEdgeSensors()[4],
-				sensors.getTrackEdgeSensors()[5],
-				sensors.getTrackEdgeSensors()[6],
-				sensors.getTrackEdgeSensors()[7],
-				sensors.getTrackEdgeSensors()[8],
-				sensors.getTrackEdgeSensors()[9],
-				sensors.getTrackEdgeSensors()[10],
-				sensors.getTrackEdgeSensors()[11],
-				sensors.getTrackEdgeSensors()[12],
-				sensors.getTrackEdgeSensors()[13],
-				sensors.getTrackEdgeSensors()[14],
-				sensors.getTrackEdgeSensors()[15],
-                sensors.getTrackEdgeSensors()[16],
-                sensors.getTrackEdgeSensors()[17],
-                sensors.getTrackEdgeSensors()[18],
-                sensors.getAngleToTrackAxis()
-        );
+			normalize(sensors.getSpeed(), -70.0, +310.0),
+			normalize(sensors.getTrackPosition(), -1, +1),
+			normalize(sensors.getTrackEdgeSensors()[0], 0, 10),
+			normalize(sensors.getTrackEdgeSensors()[1], 10, 20),
+			normalize(sensors.getTrackEdgeSensors()[2], 20, 30),
+			normalize(sensors.getTrackEdgeSensors()[3], 30, 40),
+			normalize(sensors.getTrackEdgeSensors()[4], 40, 50),
+			normalize(sensors.getTrackEdgeSensors()[5], 50, 60),
+			normalize(sensors.getTrackEdgeSensors()[6], 60, 70),
+			normalize(sensors.getTrackEdgeSensors()[7], 70, 80),
+			normalize(sensors.getTrackEdgeSensors()[8], 80, 90),
+			normalize(sensors.getTrackEdgeSensors()[9], 90, 100),
+			normalize(sensors.getTrackEdgeSensors()[10], 100, 110),
+			normalize(sensors.getTrackEdgeSensors()[11], 110, 120),
+			normalize(sensors.getTrackEdgeSensors()[12], 120, 130),
+			normalize(sensors.getTrackEdgeSensors()[13], 130, 140),
+			normalize(sensors.getTrackEdgeSensors()[14], 140, 150),
+			normalize(sensors.getTrackEdgeSensors()[15], 150, 160),
+			normalize(sensors.getTrackEdgeSensors()[16], 160, 170),
+			normalize(sensors.getTrackEdgeSensors()[17], 170, 180),
+			normalize(sensors.getTrackEdgeSensors()[18], 180, 190),
+			normalize(sensors.getAngleToTrackAxis(), -(Math.PI), +(Math.PI)) 
+			);
 		dd.toString();
         int predictedClass = knn.classify(dd, k);
         System.out.println(predictedClass);

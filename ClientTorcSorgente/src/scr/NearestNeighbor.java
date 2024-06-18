@@ -49,31 +49,9 @@ public class NearestNeighbor {
     }
  
     public List<DrivingData> findKNearestNeighbors(DrivingData testPoint, int k) {
+        kdtree.printTree();
         return kdtree.kNearestNeighbors(testPoint, k);
     }
-  /* 
-    public int classify(DrivingData testPoint, int k) {
-        
-        List<DrivingData> kNearestNeighbors = findKNearestNeighbors(testPoint, k);
-
-        // Count the occurrences of each class in the k nearest neighbors
-        for (DrivingData neighbor : kNearestNeighbors) {
-            classCounts[neighbor.cls]++;
-        }
-
-        // Find the class with the maximum count
-        int maxCount = -1;
-        int predictedClass = -1;
-        for (int i = 0; i < classCounts.length; i++) {
-            if (classCounts[i] > maxCount) {
-                maxCount = classCounts[i];
-                predictedClass = i;
-            }
-        }
-
-        return predictedClass;
-    }
-*/
 
     public int classify(DrivingData testPoint, int k) {
 

@@ -8,7 +8,7 @@ class KDTree {
     private final int dim; // Number of dimensions
 
     public KDTree(List<DrivingData> points) {
-        this.dim = 8;
+        this.dim = 22;
         root = buildTree(points, 0);
     }
 
@@ -71,4 +71,23 @@ class KDTree {
             kNearestNeighbors(farNode, target, k, depth + 1, pq);
         }
     }
+
+    public void printTree() {
+        printTree(root, 0);
+    }
+
+    private void printTree(KDNode node, int depth) {
+        if (node == null) {
+            return;
+        }
+        System.out.println("Depth " + depth + ": " + node.point);
+        printTree(node.left, depth + 1);
+        printTree(node.right, depth + 1);
+    }
+    
 }
+
+
+
+
+
