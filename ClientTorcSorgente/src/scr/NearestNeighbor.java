@@ -17,7 +17,7 @@ public class NearestNeighbor {
     public NearestNeighbor(String filename) {
         this.trainingData = new ArrayList<>();
         this.kdtree = null;
-        this.firstLineOfTheFile = "Velocità;DistanzaLineaCentrale;SensoreSXSX;SensoreSX;SensoreCentrale;SensoreDX;SensoreDXDX;AngoloTraccia";
+        this.firstLineOfTheFile = "Velocità;DistanzaLineaCentrale;TrackEdgeSensors[0];TrackEdgeSensors[1];TrackEdgeSensors[2];TrackEdgeSensors[3];TrackEdgeSensors[4];TrackEdgeSensors[5];TrackEdgeSensors[6];TrackEdgeSensors[7];TrackEdgeSensors[8];TrackEdgeSensors[9];TrackEdgeSensors[10];TrackEdgeSensors[11];TrackEdgeSensors[12];TrackEdgeSensors[13];TrackEdgeSensors[14];TrackEdgeSensors[15];TrackEdgeSensors[16];TrackEdgeSensors[17];TrackEdgeSensors[18];TrackEdgeSensors[19];AngoloTraccia";
         this.classCounts = new int[7];              //le classi sono 7
         this.readPointsFromCSV(filename);
         this.printClassDistribution();              //Stampa la distribuzione delle classi
@@ -47,14 +47,11 @@ public class NearestNeighbor {
         }
         this.kdtree = new KDTree(trainingData); // Inizializza il KDTree utilizzando i punti letti
     }
-
+ 
     public List<DrivingData> findKNearestNeighbors(DrivingData testPoint, int k) {
         return kdtree.kNearestNeighbors(testPoint, k);
     }
-
-
   /* 
-    //versione senza azzeramento dei conteggi delle classi
     public int classify(DrivingData testPoint, int k) {
         
         List<DrivingData> kNearestNeighbors = findKNearestNeighbors(testPoint, k);
