@@ -165,7 +165,7 @@ public class DrivingData {
             case 6 -> {
                 return trackedgeSensors4;
             }
-           case 7 -> {
+            case 7 -> {
                 return trackedgeSensors5;
             }
             case 8 -> {

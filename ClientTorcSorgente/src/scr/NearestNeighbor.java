@@ -49,7 +49,7 @@ public class NearestNeighbor {
     }
  
     public List<DrivingData> findKNearestNeighbors(DrivingData testPoint, int k) {
-        kdtree.printTree();
+        //kdtree.printTree();
         return kdtree.kNearestNeighbors(testPoint, k);
     }
 
