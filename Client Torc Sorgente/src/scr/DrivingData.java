@@ -23,7 +23,6 @@ public class DrivingData {
     private final double trackedgeSensors16;
     private final double trackedgeSensors17;
     private final double trackedgeSensors18;
-    private final double trackedgeSensors19;
     private final double angle;
     public int cls;
 
@@ -32,11 +31,11 @@ public class DrivingData {
     double trackedgeSensors3, double trackedgeSensors4, double trackedgeSensors5, double trackedgeSensors6, double trackedgeSensors7,
     double trackedgeSensors8, double trackedgeSensors9, double trackedgeSensors10, double trackedgeSensors11, double trackedgeSensors12,
     double trackedgeSensors13, double trackedgeSensors14, double trackedgeSensors15, double trackedgeSensors16, double trackedgeSensors17,
-    double trackedgeSensors18, double trackedgeSensors19,  double angle) {
+    double trackedgeSensors18,  double angle) {
         this.speed = speed;
         this.trackPos = trackPos;
-        this.trackedgeSensors0 = TrackEdgeSensors0;
-        this.trackedgeSensors1 = TrackEdgeSensors1;
+        this.trackedgeSensors0 = trackedgeSensors0;
+        this.trackedgeSensors1 = trackedgeSensors1;
         this.trackedgeSensors2 = trackedgeSensors2;
         this.trackedgeSensors3 = trackedgeSensors3;
         this.trackedgeSensors4 = trackedgeSensors4;
@@ -54,7 +53,6 @@ public class DrivingData {
         this.trackedgeSensors16 = trackedgeSensors16;
         this.trackedgeSensors17 = trackedgeSensors17;
         this.trackedgeSensors18 = trackedgeSensors18;
-        this.trackedgeSensors19 = trackedgeSensors19;
         this.angle = angle;
     }
 
@@ -62,11 +60,11 @@ public class DrivingData {
     double trackedgeSensors3, double trackedgeSensors4, double trackedgeSensors5, double trackedgeSensors6, double trackedgeSensors7,
     double trackedgeSensors8, double trackedgeSensors9, double trackedgeSensors10, double trackedgeSensors11, double trackedgeSensors12,
     double trackedgeSensors13, double trackedgeSensors14, double trackedgeSensors15, double trackedgeSensors16, double trackedgeSensors17,
-    double trackedgeSensors18, double trackedgeSensors19,  double angle, int cls) {
+    double trackedgeSensors18,  double angle, int cls) {
         this.speed = speed;
         this.trackPos = trackPos;
-        this.trackedgeSensors0 = TrackEdgeSensors0;
-        this.trackedgeSensors1 = TrackEdgeSensors1;
+        this.trackedgeSensors0 = trackedgeSensors0;
+        this.trackedgeSensors1 = trackedgeSensors1;
         this.trackedgeSensors2 = trackedgeSensors2;
         this.trackedgeSensors3 = trackedgeSensors3;
         this.trackedgeSensors4 = trackedgeSensors4;
@@ -84,7 +82,6 @@ public class DrivingData {
         this.trackedgeSensors16 = trackedgeSensors16;
         this.trackedgeSensors17 = trackedgeSensors17;
         this.trackedgeSensors18 = trackedgeSensors18;
-        this.trackedgeSensors19 = trackedgeSensors19;
         this.angle = angle;
         this.cls = cls; // Assign class correctly
     }
@@ -112,9 +109,8 @@ public class DrivingData {
         this.trackedgeSensors16 = Double.parseDouble(parts[18].trim());
         this.trackedgeSensors17 = Double.parseDouble(parts[19].trim());
         this.trackedgeSensors18 = Double.parseDouble(parts[20].trim());
-        this.trackedgeSensors19 = Double.parseDouble(parts[21].trim());
-        this.angle = Double.parseDouble(parts[22].trim());
-        this.cls = Integer.parseInt(parts[23].trim()); // Parse class correctly
+        this.angle = Double.parseDouble(parts[21].trim());
+        this.cls = Integer.parseInt(parts[22].trim()); // Parse class correctly
     }
 
     public double distance(DrivingData other) {
@@ -140,7 +136,6 @@ public class DrivingData {
             Math.pow(this.trackedgeSensors16 - other.trackedgeSensors16, 2) +
             Math.pow(this.trackedgeSensors17 - other.trackedgeSensors17, 2) +
             Math.pow(this.trackedgeSensors18 - other.trackedgeSensors18, 2) +
-            Math.pow(this.trackedgeSensors19 - other.trackedgeSensors19, 2) +
             Math.pow(this.angle - other.angle, 2)
         );
     }
@@ -209,9 +204,6 @@ public class DrivingData {
             }
             case 20 -> {
                 return trackedgeSensors18;
-            }
-            case 21 -> {
-                return trackedgeSensors19;
             }
             case 22 -> {
                 return angle;

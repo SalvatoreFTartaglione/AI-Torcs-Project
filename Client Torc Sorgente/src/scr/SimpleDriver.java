@@ -61,8 +61,8 @@ public class SimpleDriver extends Controller {
 
 	public SimpleDriver(){
 		auto = false;
-		train = true;
-		autonomusDriving = false;
+		train = false;
+		autonomusDriving = true;
 		trainingAction = new Action();
 		if(train){
 			try (BufferedWriter bw = new BufferedWriter(new FileWriter("Torcs_data.csv"))) {
@@ -73,8 +73,8 @@ public class SimpleDriver extends Controller {
 			SwingUtilities.invokeLater(() -> new CharReader(this));
 		}
 		if (autonomusDriving) {
-            //prototypes_filename = "C:\\Users\\salva\\Documents\\Università\\2023-2024\\2° Semestre\\AI\\Client Torc Sorgente\\classes\\Torcs_data.csv";
-			prototypes_filename = "C:\\Users\\salva\\Documents\\Università\\2023-2024\\2° Semestre\\AI\\AI-Torcs-Project\\Client Torc Sorgente\\classes\\Torcs_data.csv";
+            prototypes_filename = "C:\\Users\\salva\\Documents\\Università\\2023-2024\\2° Semestre\\AI\\Client Torc Sorgente\\classes\\Torcs_data.csv";
+			//prototypes_filename = "C:\\Users\\salva\\Documents\\Università\\2023-2024\\2° Semestre\\AI\\AI-Torcs-Project\\Client Torc Sorgente\\classes\\Torcs_data.csv";
             knn = new NearestNeighbor(prototypes_filename);
         }
 	}
@@ -407,10 +407,9 @@ public class SimpleDriver extends Controller {
 			bw.append(sensors.getTrackEdgeSensors()[13] + ";");
 			bw.append(sensors.getTrackEdgeSensors()[14] + ";");
             bw.append(sensors.getTrackEdgeSensors()[15] + ";");
-			w.append(sensors.getTrackEdgeSensors()[16] + ";");
-			w.append(sensors.getTrackEdgeSensors()[17] + ";");
-			w.append(sensors.getTrackEdgeSensors()[18] + ";");
-			w.append(sensors.getTrackEdgeSensors()[19] + ";");
+			bw.append(sensors.getTrackEdgeSensors()[16] + ";");
+			bw.append(sensors.getTrackEdgeSensors()[17] + ";");
+			bw.append(sensors.getTrackEdgeSensors()[18] + ";");
             bw.append(sensors.getAngleToTrackAxis() + ";");
 			bw.append((ch == KeyEvent.VK_UP ? String.valueOf(1)
             : ch == KeyEvent.VK_DOWN ? String.valueOf(2)
@@ -452,8 +451,6 @@ public class SimpleDriver extends Controller {
                 sensors.getTrackEdgeSensors()[16],
                 sensors.getTrackEdgeSensors()[17],
                 sensors.getTrackEdgeSensors()[18],
-                sensors.getTrackEdgeSensors()[19],
-                sensors.getTrackEdgeSensors()[20],
                 sensors.getAngleToTrackAxis()
         );
 		dd.toString();
@@ -514,7 +511,7 @@ public class SimpleDriver extends Controller {
 	
 	public void setDefault(){
 		trainingAction.steering = 0;
-		trainingAction.accelerate = 0.2;
+		trainingAction.accelerate = 0.0;
 		trainingAction.steering = 0.0;
 	}
 
