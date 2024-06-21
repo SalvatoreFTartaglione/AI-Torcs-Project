@@ -25,6 +25,12 @@ public class SimpleDriver extends Controller {
 	private double minSpeedReverse = -60.0;
 	private double maxSpeedReverse = -0.001;
 	private boolean correct = false;
+	private final int stuckTimeAutonomous = 50;
+	private final float stuckAngleAutonomous = (float) 0.523598775; // PI/6
+	private int stuckAutonomous = 0;
+	private final float steerLockAutonomous = (float) 1.00;
+	private boolean carStuck = false;
+
 
 	/* Costanti di cambio marcia */
 	final int[] gearUp = { 5000, 6000, 6000, 6500, 7000, 0 };
@@ -73,15 +79,15 @@ public class SimpleDriver extends Controller {
 		trainingAction = new Action();
 		if(train){
 			try (BufferedWriter bw = new BufferedWriter(new FileWriter("Torcs_data.csv"))) {
-				bw.append("Velocità;DistanzaLineaCentrale;TrackEdgeSensors[0];TrackEdgeSensors[1];TrackEdgeSensors[2];TrackEdgeSensors[3];TrackEdgeSensors[4];TrackEdgeSensors[5];TrackEdgeSensors[6];TrackEdgeSensors[7];TrackEdgeSensors[8];TrackEdgeSensors[9];TrackEdgeSensors[10];TrackEdgeSensors[11];TrackEdgeSensors[12];TrackEdgeSensors[13];TrackEdgeSensors[14];TrackEdgeSensors[15];TrackEdgeSensors[16];TrackEdgeSensors[17];TrackEdgeSensors[18];TrackEdgeSensors[19];AngoloTraccia;cls\n");
+				bw.append("Velocità;DistanzaLineaCentrale;TrackEdgeSensors[0];TrackEdgeSensors[1];TrackEdgeSensors[2];TrackEdgeSensors[3];TrackEdgeSensors[4];TrackEdgeSensors[5];TrackEdgeSensors[6];TrackEdgeSensors[7];TrackEdgeSensors[8];TrackEdgeSensors[9];TrackEdgeSensors[10];TrackEdgeSensors[11];TrackEdgeSensors[12];TrackEdgeSensors[13];TrackEdgeSensors[14];TrackEdgeSensors[15];TrackEdgeSensors[16];TrackEdgeSensors[17];TrackEdgeSensors[18];TrackEdgeSensors[19];cls\n");
 			} catch (IOException ex) {
 				Logger.getLogger(SimpleDriver.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			SwingUtilities.invokeLater(() -> new CharReader(this));
 		}
 		if (autonomusDriving) {
-            //prototypes_filename = "C:\\Users\\salva\\Desktop\\Universita\\2023-2024\\AI\\AI-Torcs-Project\\ClientTorcSorgente\\classes\\Torcs_data.csv";
-			prototypes_filename = "C:\\Users\\salva\\Documents\\Università\\2023-2024\\2° Semestre\\AI\\AI-Torcs-Project\\ClientTorcSorgente\\classes\\Torcs_data.csv";
+            prototypes_filename = "C:\\Users\\salva\\Desktop\\Universita\\2023-2024\\AI\\AI-Torcs-Project\\ClientTorcSorgente\\classes\\Torcs_data.csv";
+			//prototypes_filename = "C:\\Users\\salva\\Documents\\Università\\2023-2024\\2° Semestre\\AI\\AI-Torcs-Project\\ClientTorcSorgente\\classes\\Torcs_data.csv";
             knn = new NearestNeighbor(prototypes_filename);
         }
 	}
@@ -282,25 +288,24 @@ public class SimpleDriver extends Controller {
 			trainingAction.accelerate = 1.0;
 		}
 		//trainingAction.brake = filterABS(sensors, (float) trainingAction.brake);
-		//con o senza clutching non cambia niente
         trainingAction.clutch = clutching(sensors, (float) trainingAction.clutch);			
 
 		if(train){
 			//esportazione dati su file .csv
 			try{
-				//Thread.sleep(3000);
 				exportToCSV(sensors);
 			}
 			catch(IOException ex){
 				System.err.println("Error: " + ex.getMessage());
-			} /* catch (InterruptedException ex) {
-				System.err.println(ex.getMessage());
-			}  */
+			}
 			return trainingAction;
 		}
 
 		if (autonomusDriving) {
-            predictControl(sensors);
+			recovery(sensors);
+			if(! carStuck) {
+           		predictControl(sensors);
+			}
 			return trainingAction;
         }
 
@@ -395,7 +400,6 @@ public class SimpleDriver extends Controller {
 		return angles;
 	}
 
-	//Scrittura dati auto su un file csv
 	private void exportToCSV(SensorModel sensors) throws IOException {
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter("Torcs_data.csv", true))) {
@@ -404,9 +408,10 @@ public class SimpleDriver extends Controller {
 				bw.append(normalize(sensors.getSpeed(), minSpeed, maxSpeed1) + ";");
 			}
 			else if(sensors.getSpeed() < 0) {
-				bw.append(normalize(sensors.getSpeed(), minSpeedReverse, maxSpeedReverse) + ";");
+				bw.append(-normalize(sensors.getSpeed(), minSpeedReverse, maxSpeedReverse) + ";");
 			}
-			bw.append(normalize(sensors.getTrackPosition(), -1, +1) + ";");		//aggiustare minimo e massimo
+
+			bw.append(normalize(sensors.getTrackPosition(), -1, +1) + ";");		
 			bw.append(normalize(sensors.getTrackEdgeSensors()[0] , minTrackEdgeSensor, maxTrackEdgeSensor)+ ";");
 			bw.append(normalize(sensors.getTrackEdgeSensors()[1] , minTrackEdgeSensor, maxTrackEdgeSensor)+ ";");
 			bw.append(normalize(sensors.getTrackEdgeSensors()[2] , minTrackEdgeSensor, maxTrackEdgeSensor)+ ";");
@@ -451,12 +456,24 @@ public class SimpleDriver extends Controller {
         //valore di k per il K-NN. Se voglio usare NN, allora k=1 altrimenti k= (es) 5
         int k = 5;
 		double speed = 0;
+		double trackPosition = 0;
+
 		if(sensors.getSpeed() >= 0) {
 			speed = normalize(sensors.getSpeed(), minSpeed, maxSpeed1);
 		}
 		else if(sensors.getSpeed() < 0) {
 			speed = normalize(sensors.getSpeed(), minSpeedReverse, maxSpeedReverse);
 		}
+		
+		/* if(sensors.getTrackPosition() >= 1.0) {
+			trackPosition = 0.099;
+		}
+		else if(sensors.getTrackPosition() <= -1.0) {
+			trackPosition = 0.001;
+		}
+		else{ 
+			trackPosition = normalize(sensors.getTrackPosition(), -1, +1);
+		} */
         DrivingData dd = new DrivingData(
 			speed,
 			normalize(sensors.getTrackPosition(), -1, +1),
@@ -487,8 +504,6 @@ public class SimpleDriver extends Controller {
         autoControl(predictedClass, sensors);
     }
 
-	private int frenaCounter = 0;
-
 	private void autoControl(int cls, SensorModel sensors) {
 
 		//correzione dei fuori pista
@@ -506,11 +521,11 @@ public class SimpleDriver extends Controller {
 					break;
 				}
 				case 3 : {
-					sterzaSX();
+					sterzaSX(sensors);
 					break;
 				}
 				case 4 : {
-					sterzaDX();
+					sterzaDX(sensors);
 					break;
 				}
 				case 5 : {
@@ -532,21 +547,33 @@ public class SimpleDriver extends Controller {
     }
 
     public void frena(){
-        trainingAction.brake = 0.5;
+        trainingAction.brake = 0.6;
 		trainingAction.accelerate = 0.0;
 		trainingAction.steering = 0.0;
     }
 
-    public void sterzaSX(){
-        trainingAction.steering = +0.5;
-		trainingAction.accelerate = 0.25;
-		trainingAction.brake = 0.0;
+    public void sterzaSX(SensorModel sensors){
+ 		if(sensors.getSpeed() > 150){
+			trainingAction.steering = +0.55;
+			trainingAction.accelerate = 0.20;
+		}
+		else{
+			trainingAction.steering = +0.55;
+			trainingAction.accelerate = 0.45;
+		}
+		trainingAction.brake = 0.0; 
     }
 
-    public void sterzaDX(){
-        trainingAction.steering = -0.5;
-		trainingAction.accelerate = 0.25;
-		trainingAction.brake = 0.0;
+    public void sterzaDX(SensorModel sensors){
+         if(sensors.getSpeed() > 150){
+			trainingAction.steering = -0.55;
+			trainingAction.accelerate = 0.20;
+		}
+		else{
+			trainingAction.steering = -0.55;
+			trainingAction.accelerate = 0.45;
+		}
+		trainingAction.brake = 0.0; 
     }
 
     public void retro(){
@@ -557,7 +584,7 @@ public class SimpleDriver extends Controller {
     }
 	
 	public void setDefault(){
-		trainingAction.accelerate = 0.8;
+		trainingAction.accelerate = 0.80;
 		trainingAction.steering = 0.0;
 		trainingAction.brake = 0.0;
 	}
@@ -566,14 +593,12 @@ public class SimpleDriver extends Controller {
 		//rileva fuori pista bordo sx
 		if(sensors.getTrackPosition() > 1.00) {
 			correct = true;
-			//trainingAction.brake = 0.2;
-			offTrackSterzaDX();
+			offTrackSterzaDX(sensors);
 		}
 		//rileva fuori pista bordo dx
 		else if(sensors.getTrackPosition() < -1.00) {
 			correct = true;
-			//trainingAction.brake = 0.2;
-			offTrackSterzaSX();
+			offTrackSterzaSX(sensors);
 		}
 		else {
 			correct = false;
@@ -581,17 +606,60 @@ public class SimpleDriver extends Controller {
 
 	}
 
-	public void offTrackSterzaSX(){
-        trainingAction.steering = +0.25;
-		trainingAction.accelerate = 0.2;
+	public void offTrackSterzaSX(SensorModel sensors){
+		if(sensors.getSpeed() > 125){
+			trainingAction.steering = +0.15;
+			trainingAction.accelerate = 0.40;
+		}
+		else{
+			trainingAction.steering = +0.30;
+			trainingAction.accelerate = 0.50;
+		}
 		trainingAction.brake = 0.0;
     }
 
-    public void offTrackSterzaDX(){
-        trainingAction.steering = -0.25;
-		trainingAction.accelerate = 0.2;
+    public void offTrackSterzaDX(SensorModel sensors){
+		if(sensors.getSpeed() > 125){
+			trainingAction.steering = -0.15;
+			trainingAction.accelerate = 0.35;
+		}
+		else {
+			trainingAction.steering = -0.30;
+			trainingAction.accelerate = 0.40;
+		}
 		trainingAction.brake = 0.0;
     }
+
+	public void recovery(SensorModel sensors){
+
+		if (Math.abs(sensors.getAngleToTrackAxis()) > stuckAngleAutonomous) {
+			stuckAutonomous++;
+		} else {
+			stuckAutonomous = 0;
+		}
+		//La macchina è bloccata
+		if (stuckAutonomous > stuckTimeAutonomous) { 
+			//System.out.println("Bloccata");
+			carStuck = true;
+			// Per portare la macchina parallela all'asse TrackPos
+			float steer = (float) (-sensors.getAngleToTrackAxis() / steerLockAutonomous);
+			int gear = -1; 
+			// Se l'auto è orientata nella direzione corretta invertire la marcia e sterzare
+			if (sensors.getAngleToTrackAxis() * sensors.getTrackPosition() > 0) {
+				gear = 1;
+				steer = -steer;
+			}
+			clutch = clutching(sensors, clutch);
+			trainingAction.gear = gear;
+			trainingAction.steering = steer;
+			trainingAction.accelerate = 0.6;
+			trainingAction.brake = 0.0;
+			trainingAction.clutch = clutch;
+		}
+		else {
+			carStuck = false;
+		}
+	}
 
 
 }
