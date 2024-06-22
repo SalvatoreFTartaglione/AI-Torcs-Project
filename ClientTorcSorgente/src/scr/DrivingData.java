@@ -244,42 +244,4 @@ public class DrivingData {
                 "}\n";
     }
 
-
-    /* 
-    //APPLICARE NORMALIZZAZIONE ALL'ALGORITMO
-    public void normalize(double[] minValues, double[] maxValues) {
-        int minTrackEdgeSensor= 0;
-        int maxTrackEdgeSensors= 200;
-        double minSpeed = -70.00;
-        double maxSpeed = 310.00;
-        this.speed = normalizeValue(this.speed, minSpeed, maxSpeed);
-        this.trackPos = normalizeValue(this.trackPos, -1, +1);          //aggiustare min e max basato 
-        this.trackedgeSensors0 = normalizeValue(this.trackedgeSensors0, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors1 = normalizeValue(this.trackedgeSensors1, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors2 = normalizeValue(this.trackedgeSensors2, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors3 = normalizeValue(this.trackedgeSensors3, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors4 = normalizeValue(this.trackedgeSensors4, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors5 = normalizeValue(this.trackedgeSensors5, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors6 = normalizeValue(this.trackedgeSensors6, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors7 = normalizeValue(this.trackedgeSensors7, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors8 = normalizeValue(this.trackedgeSensors8, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors9 = normalizeValue(this.trackedgeSensors9, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors10 = normalizeValue(this.trackedgeSensors10, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors11 = normalizeValue(this.trackedgeSensors11, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors12 = normalizeValue(this.trackedgeSensors12, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors13 = normalizeValue(this.trackedgeSensors13, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors14 = normalizeValue(this.trackedgeSensors14, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors15 = normalizeValue(this.trackedgeSensors15, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors16 = normalizeValue(this.trackedgeSensors16, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors17 = normalizeValue(this.trackedgeSensors17, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.trackedgeSensors18 = normalizeValue(this.trackedgeSensors18, minTrackEdgeSensor, maxTrackEdgeSensors);
-        this.angle = normalizeValue(this.angle, -(Math.PI), +(Math.PI));
-    }
-
-    private double normalizeValue(double value, double min, double max) {
-        return (value - min) / (max - min);
-    }
-
-    */
-
 }
