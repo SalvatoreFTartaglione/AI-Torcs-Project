@@ -302,7 +302,7 @@ public class SimpleDriver extends Controller {
 		if (autonomusDriving) {
 			recovery(sensors);
 			if(! carStuck) {
-           		predictControl(sensors);
+    			predictControl(sensors);
 			}
 			return trainingAction;
         }
@@ -404,9 +404,9 @@ public class SimpleDriver extends Controller {
 				bw.append(normalize(sensors.getSpeed(), minSpeed, maxSpeed1) + ";");
 			}
 			else if(sensors.getSpeed() < 0) {
-				bw.append(normalize(sensors.getSpeed(), minSpeedReverse, maxSpeedReverse) + ";");
+				bw.append(-normalize(sensors.getSpeed(), minSpeedReverse, maxSpeedReverse) + ";");
 			}
-			bw.append(normalize(sensors.getTrackPosition(), -1, +1) + ";");		//aggiustare minimo e massimo
+			bw.append(normalize(sensors.getTrackPosition(), -1, +1) + ";");		
 			bw.append(normalize(sensors.getTrackEdgeSensors()[0] , minTrackEdgeSensor, maxTrackEdgeSensor)+ ";");
 			bw.append(normalize(sensors.getTrackEdgeSensors()[1] , minTrackEdgeSensor, maxTrackEdgeSensor)+ ";");
 			bw.append(normalize(sensors.getTrackEdgeSensors()[2] , minTrackEdgeSensor, maxTrackEdgeSensor)+ ";");
@@ -445,9 +445,11 @@ public class SimpleDriver extends Controller {
 
     }
 
+
 	private double normalize(double value, double min, double max) {
 		return (value - min) / (max - min);
 	}
+
 
 	public void predictControl(SensorModel sensors) {
         int k = 3;
@@ -461,7 +463,6 @@ public class SimpleDriver extends Controller {
 		}
         DrivingData dd = new DrivingData(
 			speed,
-			//trackPosition,
 			normalize(sensors.getTrackPosition(), -1, +1),
 			normalize(sensors.getTrackEdgeSensors()[0], minTrackEdgeSensor, maxTrackEdgeSensor),
 			normalize(sensors.getTrackEdgeSensors()[1], minTrackEdgeSensor, maxTrackEdgeSensor),
@@ -489,6 +490,7 @@ public class SimpleDriver extends Controller {
         //System.out.println(predictedClass);
         autoControl(predictedClass, sensors);
     }	
+
 
 	private void autoControl(int cls, SensorModel sensors) {
 
@@ -557,6 +559,7 @@ public class SimpleDriver extends Controller {
 		trainingAction.brake = 0.0; 
    }
 
+
 	public void sterzaDX(SensorModel sensors){
 
 		if(sensors.getSpeed() > 150){
@@ -574,18 +577,21 @@ public class SimpleDriver extends Controller {
 		trainingAction.brake = 0.0; 
 	}
 
+
     public void retro(){
 		trainingAction.gear = -1;
 		trainingAction.accelerate = 0.6;	
 		trainingAction.steering = 0.0;
 		trainingAction.brake = 0.0;		
     }
+
 	
 	public void setDefault(){
 		trainingAction.accelerate = 0.7;
 		trainingAction.steering = 0.0;
 		trainingAction.brake = 0.0;
 	}
+
 
 	private void correctOffTrack(SensorModel sensors){
 		//rileva fuori pista bordo sx
@@ -601,12 +607,12 @@ public class SimpleDriver extends Controller {
 		else {
 			correct = false;
 		}
-
 	}
+
 
 	public void offTrackSterzaSX(SensorModel sensors){
 		if(sensors.getSpeed() > 125){
-			trainingAction.steering = +0.15; //0.12
+			trainingAction.steering = +0.15; 
 			trainingAction.accelerate = 0.20;
 		}
 		else{
@@ -615,6 +621,7 @@ public class SimpleDriver extends Controller {
 		}
 		trainingAction.brake = 0.0;
     }
+
 
     public void offTrackSterzaDX(SensorModel sensors){
 		if(sensors.getSpeed() > 125){
@@ -628,6 +635,7 @@ public class SimpleDriver extends Controller {
 		trainingAction.brake = 0.0;
     }
 
+	
 	public void recovery(SensorModel sensors){
 
 		if (Math.abs(sensors.getAngleToTrackAxis()) > stuckAngleAutonomous) {
