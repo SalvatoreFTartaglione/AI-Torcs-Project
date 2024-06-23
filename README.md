@@ -5,10 +5,10 @@
 
 #Behavioral Cloning with TORCS 
 
-#Descrizione del progetto: IL progetto mira a realizzare un algoritmo di AI #che grazie all'ausilio del Behavioral Cloning, riesce a guidare #autonomamente una vettora nel simulatore di guida TORCS
+#Descrizione del progetto: IL progetto mira a realizzare un algoritmo di AI #che grazie all'ausilio del Behavioral Cloning, riesce a guidare #autonomamente una vettura nel simulatore di guida TORCS
 
 #Come lanciare il progetto: 
-àPer lanciare il programma seguire i seguenti passi.
+#Per lanciare il programma seguire i seguenti passi.
 #1)Andare nella directory del progetto e spostarsi sulla cartella "src"
 #2)Aprire nel terminale la cartella
 #3)Eseguire sul terminale: "javac -d ../classes scr/*.java"
